@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin · Romancham Market</title>
+<link rel="stylesheet" href="/brand.css">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#B63522;--amber:#F7AA3E;--cream:#FFE1BD;--ivory:#FBF5EC;--ivory2:#F4EADB;--brown:#3B2419;--brown2:#6B4B3A;--muted:#8C7466;--line:rgba(59,36,25,.12);--ok:#1f7a3a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,system-ui,sans-serif;background:var(--ivory);color:var(--brown);font-size:14px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:400}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font:inherit;color:var(--brown)}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login form{background:#fff;padding:36px;border-radius:20px;width:min(380px,100%);border:1px solid var(--line)}
+.login .wm{height:40px;display:block;margin:0 auto 4px}
+.login .mk{text-align:center;font-size:10px;letter-spacing:.4em;color:var(--red);font-weight:700;margin-bottom:24px}
+.fld{margin-bottom:12px}.fld label{display:block;font-size:12px;font-weight:700;color:var(--brown2);margin-bottom:4px}
+.fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;outline:none}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--amber)}
+.fld textarea{min-height:64px;resize:vertical}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:999px;font-weight:700;font-size:13px;background:var(--brown);color:#fff;white-space:nowrap}
+.btn.red{background:var(--red)}.btn.light{background:var(--ivory2);color:var(--brown)}.btn.sm{padding:6px 12px;font-size:12px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-top:8px}
+.app{display:none;min-height:100vh;grid-template-columns:220px 1fr}
+.side{background:var(--brown);color:#fff;padding:22px 14px;position:sticky;top:0;height:100vh;overflow:auto}
+.side .wm{height:30px;margin:0 8px}.side .mk{font-size:9px;letter-spacing:.4em;color:var(--amber);margin:4px 10px 22px;font-weight:700}
+.side button{display:flex;width:100%;padding:10px 12px;border-radius:10px;color:rgba(255,255,255,.75);font-weight:600;text-align:left;margin-bottom:2px}
+.side button.on,.side button:hover{background:rgba(255,255,255,.1);color:#fff}
+.side .who{font-size:11.5px;color:rgba(255,255,255,.5);margin:20px 12px 8px;word-break:break-all}
+main{padding:26px 28px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.top h1{font-size:30px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}
+.kpi small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.kpi b{display:block;font-family:Fraunces,serif;font-size:28px;font-weight:400;margin-top:4px}
+.kpi.warn b{color:var(--red)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;overflow:auto}
+.card h3{font-size:19px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr.click{cursor:pointer}tr.click:hover td{background:var(--ivory)}
+.pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700;background:var(--ivory2)}
+.pill.Pending,.pill.New{background:#fde7c4}.pill.Delivered,.pill.Converted,.pill.paid{background:#d8f0dd;color:var(--ok)}
+.pill.Cancelled,.pill.Refunded,.pill.Closed{background:#f6d6d0;color:var(--red)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tools input,.tools select{border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:#fff;outline:none}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(620px,100%);background:var(--ivory);transform:translateX(100%);transition:.3s;z-index:20;overflow:auto;padding:24px}
+.drawer.open{transform:none;box-shadow:-20px 0 60px rgba(0,0,0,.15)}
+.drawer .x{position:absolute;top:14px;right:14px;font-size:26px;width:38px;height:38px;border-radius:50%;background:#fff}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px}
+.checks{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 14px}.checks label{display:flex;gap:6px;align-items:center;font-weight:600}
+.thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--cream)}
+.bars{display:flex;align-items:flex-end;gap:4px;height:140px;padding-top:10px}
+.bars div{flex:1;background:var(--amber);border-radius:4px 4px 0 0;position:relative;min-height:2px}
+.bars div:hover{background:var(--red)}
+.bars div span{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted)}
+.bars div em{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:10px;font-style:normal;white-space:nowrap;display:none}
+.bars div:hover em{display:block}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--brown);color:#fff;padding:10px 18px;border-radius:999px;opacity:0;transition:.3s;z-index:30;pointer-events:none}
+.toast.show{opacity:1}
+.muted{color:var(--muted)}
+.mob-nav{display:none}
+@media(max-width:820px){
+  .app{grid-template-columns:1fr}.side{display:none}
+  .mob-nav{display:flex;gap:6px;overflow:auto;padding:10px;background:var(--brown);position:sticky;top:0;z-index:10}
+  .mob-nav button{color:#fff;padding:8px 12px;border-radius:999px;white-space:nowrap;font-weight:600;font-size:12.5px}
+  .mob-nav button.on{background:var(--red)}
+  main{padding:18px 14px}.g2,.g3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="login" id="login">
+  <form onsubmit="return doLogin(event)">
+    <span class="wm" role="img" aria-label="Romancham"></span><div class="mk">MARKET · ADMIN</div>
+    <div class="fld"><label>Email</label><input id="le" type="email" required autocomplete="username"></div>
+    <div class="fld"><label>Password</label><input id="lp" type="password" required autocomplete="current-password"></div>
+    <button class="btn red" style="width:100%;justify-content:center;padding:12px" id="lb">Sign in</button>
+    <div class="err" id="lerr"></div>
+  </form>
+</div>
+
+<div class="app" id="app">
+  <aside class="side">
+    <span class="wm" role="img" aria-label="Romancham"></span><div class="mk">MARKET ADMIN</div>
+    <div id="nav"></div>
+    <div class="who" id="who"></div>
+    <button onclick="logout()">Sign out</button>
+    <button onclick="window.open('/','_blank')">View store ↗</button>
+  </aside>
+  <div>
+    <div class="mob-nav" id="mnav"></div>
+    <main id="main"></main>
+  </div>
+</div>
+
+<div class="drawer" id="dr"><button class="x" onclick="closeDr()">×</button><div id="drb"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/config.js"></script>
+<script>
+const CFG = window.ROMANCHAM_CONFIG || {};
+const sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const inr = n => '₹' + Number(n||0).toLocaleString('en-IN', {maximumFractionDigits:2});
+const dt = s => s ? new Date(s).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+const STATUSES = ['Pending','Confirmed','Processing','Packed','Shipped','Out for Delivery','Delivered','Cancelled','Refunded'];
+const PAY = ['pending','paid','failed','refunded'];
+const ENQ = ['New','Contacted','Quoted','Converted','Closed'];
+let tt; function toast(s){ const t = document.getElementById('toast'); t.textContent = s; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('show'), 2400); }
+function closeDr(){ document.getElementById('dr').classList.remove('open'); }
+function openDr(html){ document.getElementById('drb').innerHTML = html; document.getElementById('dr').classList.add('open'); }
+function fail(e){ console.error(e); toast(e.message || 'Error'); }
+
+/* ---------- auth ---------- */
+async function doLogin(e){
+  e.preventDefault(); const b = document.getElementById('lb'), er = document.getElementById('lerr'); b.disabled = true; er.textContent = '';
+  const {error} = await sb.auth.signInWithPassword({email: document.getElementById('le').value, password: document.getElementById('lp').value});
+  b.disabled = false; if (error){ er.textContent = error.message; return false; } boot(); return false;
+}
+async function logout(){ await sb.auth.signOut(); location.reload(); }
+async function boot(){
+  const {data:{session}} = await sb.auth.getSession(); if (!session) return;
+  const {data:ok} = await sb.rpc('is_admin');
+  if (!ok){ document.getElementById('lerr').textContent = 'This account is not an admin. Ask the owner to add you.'; await sb.auth.signOut(); return; }
+  document.getElementById('login').style.display = 'none'; document.getElementById('app').style.display = 'grid';
+  document.getElementById('who').textContent = session.user.email;
+  const nav = Object.keys(VIEWS).map(k => `<button data-v="${k}" onclick="show('${k}')">${k}</button>`).join('');
+  document.getElementById('nav').innerHTML = nav; document.getElementById('mnav').innerHTML = nav;
+  show(location.hash.slice(1) && VIEWS[decodeURIComponent(location.hash.slice(1))] ? decodeURIComponent(location.hash.slice(1)) : 'Dashboard');
+}
+let CUR = '';
+function show(v){ CUR = v; location.hash = v; document.querySelectorAll('[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v)); closeDr(); VIEWS[v](); }
+const M = () => document.getElementById('main');
+
+/* ---------- views ---------- */
+const VIEWS = {
+  async Dashboard(){
+    M().innerHTML = '<div class="top"><h1>Dashboard</h1></div><p class="muted">Loading…</p>';
+    const since = new Date(); since.setDate(since.getDate()-30); since.setHours(0,0,0,0);
+    const [o, p, e, items] = await Promise.all([
+      sb.from('orders').select('id,total,status,payment_status,created_at').order('created_at',{ascending:false}).limit(2000),
+      sb.from('products').select('id,name,stock,low_stock_at,active,category_slug'),
+      sb.from('corporate_enquiries').select('id,status'),
+      sb.from('order_items').select('name,qty,line_total,order_id,orders!inner(status,created_at)').gte('orders.created_at', since.toISOString())
+    ]);
+    if (o.error) return fail(o.error);
+    const orders = o.data, valid = orders.filter(x => !['Cancelled','Refunded'].includes(x.status));
+    const today = new Date().toDateString(), month = new Date().getMonth(), yr = new Date().getFullYear();
+    const sum = a => a.reduce((s,x)=>s+Number(x.total),0);
+    const tSales = sum(valid.filter(x => new Date(x.created_at).toDateString() === today));
+    const mSales = sum(valid.filter(x => { const d = new Date(x.created_at); return d.getMonth()===month && d.getFullYear()===yr; }));
+    const prods = p.data||[], low = prods.filter(x => x.active && x.stock>0 && x.stock<=x.low_stock_at), out = prods.filter(x => x.active && x.stock<=0);
+    const days = [...Array(14)].map((_,i) => { const d = new Date(); d.setDate(d.getDate()-13+i); return d; });
+    const daily = days.map(d => sum(valid.filter(x => new Date(x.created_at).toDateString() === d.toDateString())));
+    const max = Math.max(1, ...daily);
+    const best = {}; (items.data||[]).filter(i => !['Cancelled','Refunded'].includes(i.orders.status)).forEach(i => { best[i.name] = best[i.name] || {q:0,v:0}; best[i.name].q += i.qty; best[i.name].v += Number(i.line_total); });
+    const bestRows = Object.entries(best).sort((a,b)=>b[1].v-a[1].v).slice(0,8);
+    const byStatus = STATUSES.map(s => [s, orders.filter(x=>x.status===s).length]).filter(x=>x[1]);
+    M().innerHTML = `<div class="top"><h1>Dashboard</h1><button class="btn light" onclick="show('Dashboard')">Refresh</button></div>
+      <div class="kpis">
+        <div class="kpi"><small>Today's sales</small><b>${inr(tSales)}</b></div>
+        <div class="kpi"><small>This month</small><b>${inr(mSales)}</b></div>
+        <div class="kpi"><small>Total orders</small><b>${orders.length}</b></div>
+        <div class="kpi warn"><small>Pending orders</small><b>${orders.filter(x=>x.status==='Pending').length}</b></div>
+        <div class="kpi"><small>Paid orders</small><b>${orders.filter(x=>x.payment_status==='paid').length}</b></div>
+        <div class="kpi"><small>Cancelled</small><b>${orders.filter(x=>x.status==='Cancelled').length}</b></div>
+        <div class="kpi"><small>Products</small><b>${prods.filter(x=>x.active).length}</b></div>
+        <div class="kpi warn"><small>Low stock</small><b>${low.length}</b></div>
+        <div class="kpi warn"><small>Out of stock</small><b>${out.length}</b></div>
+        <div class="kpi warn"><small>New enquiries</small><b>${(e.data||[]).filter(x=>x.status==='New').length}</b></div>
+      </div>
+      <div class="card"><h3>Daily sales — last 14 days</h3><div class="bars">${daily.map((v,i)=>`<div style="height:${v/max*100}%"><em>${inr(v)}</em><span>${days[i].getDate()}</span></div>`).join('')}</div><div style="height:18px"></div></div>
+      <div class="g2">
+        <div class="card"><h3>Bestsellers (30 days)</h3>${bestRows.length?`<table><tr><th>Product</th><th>Qty</th><th>Sales</th></tr>${bestRows.map(([n,x])=>`<tr><td>${esc(n)}</td><td>${x.q}</td><td>${inr(x.v)}</td></tr>`).join('')}</table>`:'<p class="muted">No sales yet.</p>'}</div>
+        <div class="card"><h3>Orders by status</h3>${byStatus.length?`<table>${byStatus.map(([s,n])=>`<tr><td><span class="pill ${s}">${s}</span></td><td>${n}</td></tr>`).join('')}</table>`:'<p class="muted">No orders yet.</p>'}
+          ${low.length||out.length?`<h3 style="margin-top:16px">Stock alerts</h3><table>${[...out,...low].map(x=>`<tr><td>${esc(x.name)}</td><td><span class="pill ${x.stock<=0?'Cancelled':'Pending'}">${x.stock<=0?'Out':x.stock+' left'}</span></td></tr>`).join('')}</table>`:''}</div>
+      </div>`;
+  },
+
+  async Orders(){
+    M().innerHTML = `<div class="top"><h1>Orders</h1><button class="btn light" onclick="exportOrders()">Export CSV</button></div>
+      <div class="tools"><input id="oq" placeholder="Search order no, name, phone" oninput="renderOrders()"><select id="os" onchange="renderOrders()"><option value="">All statuses</option>${STATUSES.map(s=>`<option>${s}</option>`).join('')}</select></div>
+      <div class="card" id="olist"><p class="muted">Loading…</p></div>`;
+    const {data, error} = await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(1000);
+    if (error) return fail(error); window.ORDERS = data; renderOrders();
+  },
+
+  async Products(){
+    M().innerHTML = `<div class="top"><h1>Products</h1><button class="btn red" onclick="editProduct()">+ Add product</button></div>
+      <div class="tools"><input id="pq" placeholder="Search name or SKU" oninput="renderProducts()"><select id="pc" onchange="renderProducts()"><option value="">All categories</option></select></div>
+      <div class="card" id="plist"><p class="muted">Loading…</p></div>`;
+    await loadProducts(); renderProducts();
+  },
+
+  async Inventory(){
+    await loadProducts();
+    const {data:mv} = await sb.from('inventory_movements').select('*, products(name,sku)').order('created_at',{ascending:false}).limit(200);
+    M().innerHTML = `<div class="top"><h1>Inventory</h1></div>
+      <div class="card"><h3>Stock in / out</h3>
+        <div class="g3"><div class="fld"><label>Product</label><select id="ip">${window.PRODS.map(p=>`<option value="${p.id}">${esc(p.name)} (${esc(p.sku)}) — ${p.stock}</option>`).join('')}</select></div>
+        <div class="fld"><label>Type</label><select id="it"><option value="inward">Stock inward (+)</option><option value="outward">Stock outward (−)</option><option value="adjustment">Manual adjustment (±)</option></select></div>
+        <div class="fld"><label>Quantity</label><input id="iq" type="number" placeholder="e.g. 10 (or −3 for adjustment)"></div></div>
+        <div class="fld"><label>Reference / note</label><input id="ir" placeholder="Batch no, bill no, reason"></div>
+        <button class="btn red" onclick="moveStock()">Save movement</button></div>
+      <div class="card"><h3>Current stock</h3><table><tr><th>SKU</th><th>Product</th><th>Stock</th><th>Low at</th><th></th></tr>
+        ${window.PRODS.map(p=>`<tr><td>${esc(p.sku)}</td><td>${esc(p.name)}</td><td><b>${p.stock}</b></td><td>${p.low_stock_at}</td><td>${p.stock<=0?'<span class="pill Cancelled">Out</span>':p.stock<=p.low_stock_at?'<span class="pill Pending">Low</span>':''}</td></tr>`).join('')}</table></div>
+      <div class="card"><h3>Movement history (latest 200)</h3><table><tr><th>When</th><th>Product</th><th>Change</th><th>Reason</th><th>Ref</th></tr>
+        ${(mv||[]).map(m=>`<tr><td>${dt(m.created_at)}</td><td>${esc(m.products?.name)}</td><td style="color:${m.change<0?'var(--red)':'var(--ok)'}">${m.change>0?'+':''}${m.change}</td><td>${esc(m.reason)}</td><td>${esc(m.ref)}</td></tr>`).join('')}</table></div>`;
+  },
+
+  async Customers(){
+    M().innerHTML = '<div class="top"><h1>Customers</h1></div><div class="card"><p class="muted">Loading…</p></div>';
+    const {data, error} = await sb.from('orders').select('customer_name,phone,email,total,status,created_at,order_no').order('created_at',{ascending:false}).limit(5000);
+    if (error) return fail(error);
+    const c = {}; data.forEach(o => { const k = o.phone; c[k] = c[k] || {name:o.customer_name, phone:o.phone, email:o.email, n:0, v:0, last:o.created_at, lastNo:o.order_no}; c[k].n++; if (!['Cancelled','Refunded'].includes(o.status)) c[k].v += Number(o.total); });
+    const rows = Object.values(c).sort((a,b)=>b.v-a.v);
+    M().innerHTML = `<div class="top"><h1>Customers</h1><span class="muted">${rows.length} customers</span></div><div class="card"><table><tr><th>Name</th><th>Mobile</th><th>Email</th><th>Orders</th><th>Spent</th><th>Last order</th></tr>
+      ${rows.map(r=>`<tr><td>${esc(r.name)}</td><td><a href="https://wa.me/91${esc(r.phone)}" target="_blank">${esc(r.phone)}</a></td><td>${esc(r.email)}</td><td>${r.n}</td><td>${inr(r.v)}</td><td>${dt(r.last)} · ${esc(r.lastNo)}</td></tr>`).join('')}</table></div>`;
+  },
+
+  async Enquiries(){
+    const {data, error} = await sb.from('corporate_enquiries').select('*').order('created_at',{ascending:false});
+    if (error) return fail(error); window.ENQS = data;
+    M().innerHTML = `<div class="top"><h1>Corporate enquiries</h1></div><div class="card"><table><tr><th>Date</th><th>Company</th><th>Contact</th><th>Qty</th><th>Budget</th><th>Needed by</th><th>Status</th></tr>
+      ${data.map(x=>`<tr class="click" onclick="openEnq(${x.id})"><td>${dt(x.created_at)}</td><td><b>${esc(x.company)}</b></td><td>${esc(x.contact_person)}<br><span class="muted">${esc(x.phone)}</span></td><td>${x.quantity??''}</td><td>${x.budget_per_gift?inr(x.budget_per_gift):''}</td><td>${x.delivery_date||''}</td><td><span class="pill ${x.status}">${x.status}</span></td></tr>`).join('') || '<tr><td colspan="7" class="muted">No enquiries yet.</td></tr>'}</table></div>`;
+  },
+
+  async Subscribers(){
+    const {data, error} = await sb.from('newsletter_subscribers').select('*').order('created_at',{ascending:false});
+    if (error) return fail(error);
+    M().innerHTML = `<div class="top"><h1>Newsletter</h1><button class="btn light" onclick='csv(${JSON.stringify("subscribers.csv")}, window.SUBS)'>Export CSV</button></div><div class="card"><table><tr><th>Date</th><th>Name</th><th>Email</th></tr>
+      ${data.map(x=>`<tr><td>${dt(x.created_at)}</td><td>${esc(x.name)}</td><td>${esc(x.email)}</td></tr>`).join('') || '<tr><td colspan="3" class="muted">No subscribers yet.</td></tr>'}</table></div>`;
+    window.SUBS = data;
+  },
+
+  async Delivery(){
+    const {data, error} = await sb.from('delivery_pincodes').select('*').order('pincode');
+    if (error) return fail(error); window.PINS = data;
+    M().innerHTML = `<div class="top"><h1>Delivery pincodes</h1></div>
+      <div class="card"><h3>Add / update pincode</h3><div class="g3">
+        <div class="fld"><label>Pincode</label><input id="dp" maxlength="6"></div><div class="fld"><label>Area</label><input id="da"></div><div class="fld"><label>Charge (₹)</label><input id="dc" type="number" value="80"></div></div>
+        <div class="g2"><div class="fld"><label>Delivery estimate</label><input id="de" value="1–2 days"></div><div class="fld"><label>Active</label><select id="dact"><option value="true">Yes — deliver</option><option value="false">No — disabled</option></select></div></div>
+        <button class="btn red" onclick="savePin()">Save pincode</button>
+        <p class="muted" style="margin-top:8px">Free-delivery threshold is under Settings.</p></div>
+      <div class="card"><div class="tools"><input id="dq" placeholder="Filter pincode or area" oninput="renderPins()"></div><div id="dlist"></div></div>`;
+    renderPins();
+  },
+
+  async Hampers(){
+    const {data, error} = await sb.from('hamper_boxes').select('*').order('sort');
+    if (error) return fail(error);
+    M().innerHTML = `<div class="top"><h1>Hamper boxes</h1><button class="btn red" onclick="saveBox()">+ Add box</button></div>
+      <div class="card"><p class="muted" style="margin-bottom:10px">Box price is added to the items the customer picks. Which products can go in a hamper is set per product ("Hamper eligible").</p>
+      <table><tr><th>Name</th><th>Capacity</th><th>Box price</th><th>Sort</th><th>Active</th><th></th></tr>
+      ${data.map(b=>`<tr><td><input value="${esc(b.name)}" id="bn${b.id}" style="width:120px"></td><td><input type="number" value="${b.capacity}" id="bc${b.id}" style="width:70px"></td><td><input type="number" value="${b.price}" id="bp${b.id}" style="width:90px"></td><td><input type="number" value="${b.sort}" id="bs${b.id}" style="width:60px"></td><td><input type="checkbox" ${b.active?'checked':''} id="ba${b.id}"></td><td><button class="btn sm" onclick="saveBox(${b.id})">Save</button></td></tr>`).join('')}</table></div>`;
+  },
+
+  async Settings(){
+    const {data, error} = await sb.from('business_settings').select('*').order('key');
+    if (error) return fail(error);
+    const labels = {whatsapp_number:'WhatsApp number (with country code, e.g. 919876543210)', email:'Business email', address:'Café address (shown on site)', hours:'Opening hours', gstin:'GSTIN', fssai:'FSSAI licence no.', instagram:'Instagram URL', free_shipping_threshold:'Free delivery above (₹)', maps_query:'Google Maps search text / place name', announcement:'Top announcement bar', heat_notice:'Chocolate heat notice'};
+    M().innerHTML = `<div class="top"><h1>Settings</h1></div><div class="card"><p class="muted" style="margin-bottom:12px">These values are public (shown on the website). Never put passwords or API secrets here.</p>
+      ${data.map(s=>`<div class="fld"><label>${esc(labels[s.key]||s.key)}</label><input data-k="${esc(s.key)}" value="${esc(s.value)}"></div>`).join('')}
+      <button class="btn red" onclick="saveSettings()">Save settings</button></div>`;
+  }
+};
+
+/* ---------- orders ---------- */
+function renderOrders(){
+  const q = (document.getElementById('oq').value||'').toLowerCase(), s = document.getElementById('os').value;
+  const list = window.ORDERS.filter(o => (!s || o.status===s) && (!q || [o.order_no,o.customer_name,o.phone].join(' ').toLowerCase().includes(q)));
+  document.getElementById('olist').innerHTML = `<table><tr><th>Order</th><th>Date</th><th>Customer</th><th>Pincode</th><th>Total</th><th>Payment</th><th>Status</th></tr>
+    ${list.map(o=>`<tr class="click" onclick="openOrder('${o.id}')"><td><b>${esc(o.order_no)}</b></td><td>${dt(o.created_at)}</td><td>${esc(o.customer_name)}<br><span class="muted">${esc(o.phone)}</span></td><td>${esc(o.pincode)}</td><td>${inr(o.total)}</td><td><span class="pill ${o.payment_status}">${o.payment_status}</span></td><td><span class="pill ${o.status.replace(/ /g,'')}">${o.status}</span></td></tr>`).join('') || '<tr><td colspan="7" class="muted">No orders.</td></tr>'}</table>`;
+}
+async function openOrder(id){
+  const o = window.ORDERS.find(x => x.id === id);
+  const [{data:items}, {data:act}] = await Promise.all([sb.from('order_items').select('*').eq('order_id', id), sb.from('order_activity').select('*').eq('order_id', id).order('created_at')]);
+  openDr(`<h2 style="font-size:26px">${esc(o.order_no)}</h2><p class="muted">${dt(o.created_at)}</p>
+    <div class="card" style="margin-top:14px"><b>${esc(o.customer_name)}</b> · <a href="https://wa.me/91${esc(o.phone)}" target="_blank">${esc(o.phone)}</a> ${o.email?'· '+esc(o.email):''}<br>${esc(o.address)}${o.area?', '+esc(o.area):''}, ${esc(o.city)} ${esc(o.pincode)}
+      ${o.delivery_date?`<br><b>Delivery date:</b> ${o.delivery_date}`:''}${o.instructions?`<br><b>Instructions:</b> ${esc(o.instructions)}`:''}
+      ${o.gift_message?`<br><b>Gift:</b> “${esc(o.gift_message)}” ${o.recipient_name?'to '+esc(o.recipient_name):''} ${o.sender_name?'from '+esc(o.sender_name):''}`:''}</div>
+    <div class="card"><table><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+      ${items.map(i=>`<tr><td>${esc(i.name)}${i.sku?`<br><span class="muted">${esc(i.sku)}</span>`:''}${(i.components||[]).map(c=>`<br><span class="muted">– ${esc(c.name)} × ${c.qty}</span>`).join('')}</td><td>${i.qty}</td><td>${inr(i.unit_price)}</td><td>${inr(i.line_total)}</td></tr>`).join('')}
+      <tr><td colspan="3">Subtotal</td><td>${inr(o.subtotal)}</td></tr><tr><td colspan="3">Delivery</td><td>${inr(o.delivery_charge)}</td></tr><tr><td colspan="3"><b>Total</b> <span class="muted">(GST incl. ${inr(o.gst_included)})</span></td><td><b>${inr(o.total)}</b></td></tr></table></div>
+    <div class="card"><div class="g2"><div class="fld"><label>Order status</label><select id="ost">${STATUSES.map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select></div>
+      <div class="fld"><label>Payment status</label><select id="opy">${PAY.map(s=>`<option ${s===o.payment_status?'selected':''}>${s}</option>`).join('')}</select></div></div>
+      <div class="fld"><label>Note (optional)</label><input id="onote" placeholder="e.g. Paid via UPI, ref 1234"></div>
+      <button class="btn red" onclick="saveOrder('${o.id}')">Update order</button> <button class="btn light" onclick="printInvoice('${o.id}')">Invoice / print</button>
+      <p class="muted" style="margin-top:8px">Cancelling puts the stock back automatically. Mark “paid” only after you have checked the money arrived.</p></div>
+    <div class="card"><h3>Activity</h3><table>${(act||[]).map(a=>`<tr><td>${dt(a.created_at)}</td><td>${esc(a.action)}</td><td>${esc(a.note)}</td></tr>`).join('')}</table></div>`);
+  window.CUR_ITEMS = items;
+}
+async function saveOrder(id){
+  const o = window.ORDERS.find(x => x.id === id), st = document.getElementById('ost').value, py = document.getElementById('opy').value, note = document.getElementById('onote').value || null;
+  if (st !== o.status){ const {error} = await sb.rpc('admin_set_order_status', {p_order:id, p_status:st, p_note:note}); if (error) return fail(error); }
+  if (py !== o.payment_status){ const {error} = await sb.from('orders').update({payment_status:py}).eq('id', id); if (error) return fail(error);
+    await sb.from('order_activity').insert({order_id:id, action:'payment → '+py, note}); }
+  toast('Order updated'); await VIEWS.Orders(); openOrder(id);
+}
+async function printInvoice(id){
+  const o = window.ORDERS.find(x => x.id === id), items = window.CUR_ITEMS;
+  const {data:s} = await sb.from('business_settings').select('*'); const S = {}; (s||[]).forEach(x => S[x.key] = x.value);
+  const w = window.open('', '_blank');
+  w.document.write(`<html><head><title>${o.order_no}</title><style>body{font-family:Arial;padding:30px;color:#222;font-size:13px}table{width:100%;border-collapse:collapse;margin-top:14px}td,th{border:1px solid #ccc;padding:6px;text-align:left}h1{margin:0}.r{text-align:right}</style></head><body>
+    <h1>Romancham Market</h1><div>${esc(S.address||'Anna Nagar, Chennai')}${S.gstin?' · GSTIN '+esc(S.gstin):''}${S.fssai?' · FSSAI '+esc(S.fssai):''}</div>
+    <h2>${S.gstin?'Tax Invoice':'Order Summary'} — ${esc(o.order_no)}</h2><div>Date: ${new Date(o.created_at).toLocaleDateString('en-IN')}</div>
+    <p><b>Bill / ship to:</b> ${esc(o.customer_name)}, ${esc(o.phone)}<br>${esc(o.address)}${o.area?', '+esc(o.area):''}, ${esc(o.city)} ${esc(o.pincode)}, ${esc(o.state)}</p>
+    <table><tr><th>Item</th><th>HSN</th><th>Qty</th><th class="r">Rate (incl. GST)</th><th class="r">GST %</th><th class="r">Taxable</th><th class="r">CGST</th><th class="r">SGST</th><th class="r">Amount</th></tr>
+    ${items.map(i=>{ const tv = i.line_total*100/(100+Number(i.gst_rate)); const g = i.line_total - tv; return `<tr><td>${esc(i.name)}</td><td></td><td>${i.qty}</td><td class="r">${i.unit_price}</td><td class="r">${i.gst_rate}</td><td class="r">${tv.toFixed(2)}</td><td class="r">${(g/2).toFixed(2)}</td><td class="r">${(g/2).toFixed(2)}</td><td class="r">${Number(i.line_total).toFixed(2)}</td></tr>`; }).join('')}
+    <tr><td colspan="8">Delivery</td><td class="r">${Number(o.delivery_charge).toFixed(2)}</td></tr><tr><td colspan="8"><b>Total</b></td><td class="r"><b>${Number(o.total).toFixed(2)}</b></td></tr></table>
+    <p style="margin-top:20px;font-size:11px;color:#666">Intra-state (Tamil Nadu) supply assumed — CGST/SGST split shown. Hamper lines show GST as 0 here; verify tax treatment with your accountant before using this as a GST invoice.</p>
+    <script>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+function csv(name, rows){
+  if (!rows || !rows.length){ toast('Nothing to export'); return; }
+  const keys = Object.keys(rows[0]); const q = v => `"${String(v??'').replace(/"/g,'""')}"`;
+  const blob = new Blob([[keys.join(','), ...rows.map(r => keys.map(k => q(typeof r[k]==='object'&&r[k]?JSON.stringify(r[k]):r[k])).join(','))].join('\n')], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+}
+function exportOrders(){ csv('orders.csv', window.ORDERS); }
+
+/* ---------- products ---------- */
+async function loadProducts(){
+  const [{data, error}, {data:cats}] = await Promise.all([sb.from('products').select('*').order('sort').order('name'), sb.from('categories').select('*').order('sort')]);
+  if (error) return fail(error); window.PRODS = data; window.CATS = cats || [];
+  const pc = document.getElementById('pc'); if (pc && pc.options.length === 1) cats.forEach(c => pc.add(new Option(c.name, c.slug)));
+}
+function renderProducts(){
+  const q = (document.getElementById('pq').value||'').toLowerCase(), c = document.getElementById('pc').value;
+  const list = window.PRODS.filter(p => (!c || p.category_slug===c) && (!q || (p.name+' '+p.sku).toLowerCase().includes(q)));
+  document.getElementById('plist').innerHTML = `<table><tr><th></th><th>Product</th><th>Category</th><th>MRP</th><th>Price</th><th>GST</th><th>Stock</th><th>Flags</th><th>Live</th></tr>
+    ${list.map(p=>`<tr class="click" onclick="editProduct('${p.id}')"><td>${p.image_url?`<img class="thumb" src="${esc(p.image_url)}">`:'<div class="thumb"></div>'}</td><td><b>${esc(p.name)}</b><br><span class="muted">${esc(p.sku)}${p.is_sample?' · SAMPLE':''}</span></td><td>${esc(p.category_slug)}</td><td>${inr(p.mrp)}</td><td>${inr(p.price)}</td><td>${p.gst_rate}%</td><td>${p.stock<=0?'<span class="pill Cancelled">0</span>':p.stock<=p.low_stock_at?`<span class="pill Pending">${p.stock}</span>`:p.stock}</td><td>${[p.is_bestseller&&'Best',p.is_gift&&'Gift',p.is_new&&'New'].filter(Boolean).join(', ')}</td><td>${p.active?'✓':'—'}</td></tr>`).join('')}</table>`;
+}
+function editProduct(id){
+  const p = id ? window.PRODS.find(x=>x.id===id) : {sku:'',name:'',category_slug:(window.CATS[0]||{}).slug,mrp:'',price:'',gst_rate:5,stock:0,low_stock_at:5,active:true,hamper_eligible:true,sort:0};
+  const f = (k,l,t='text',x='') => `<div class="fld"><label>${l}</label><input name="${k}" type="${t}" value="${esc(p[k]??'')}" ${x}></div>`;
+  const ta = (k,l) => `<div class="fld"><label>${l}</label><textarea name="${k}">${esc(p[k]??'')}</textarea></div>`;
+  const cb = (k,l) => `<label><input type="checkbox" name="${k}" ${p[k]?'checked':''}> ${l}</label>`;
+  openDr(`<h2 style="font-size:26px">${id?'Edit product':'New product'}</h2><form id="pf" onsubmit="return saveProduct(event,'${id||''}')" style="margin-top:14px">
+    <div class="g2">${f('name','Product name *','text','required')}${f('sku','SKU *','text','required')}</div>
+    <div class="g2"><div class="fld"><label>Category *</label><select name="category_slug">${window.CATS.map(c=>`<option value="${c.slug}" ${c.slug===p.category_slug?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>${f('subcategory','Subcategory (e.g. Bonbons, Filter Coffee)')}</div>
+    ${f('short_desc','Short description (card)')}${ta('description','Full description')}
+    <div class="g3">${f('mrp','MRP incl. tax (₹) *','number','required step="0.01" min="0"')}${f('price','Selling price (₹) *','number','required step="0.01" min="0"')}${f('gst_rate','GST %','number','step="0.01" min="0"')}</div>
+    <div class="g3">${f('size_label','Weight / size')}${f('hsn','HSN code')}${f('sort','Sort order','number')}</div>
+    <div class="g3">${f('stock','Stock','number',id?'disabled title="Use Inventory to change stock"':'min="0"')}${f('low_stock_at','Low-stock alert at','number')}${f('cocoa_pct','Cocoa %','number','step="0.1"')}</div>
+    <div class="g3">${f('roast_level','Roast level')}${f('origin','Origin')}${f('tasting_notes','Tasting notes')}</div>
+    ${ta('ingredients','Ingredients')}<div class="g3">${f('allergens','Allergens')}${f('shelf_life','Shelf life')}${f('storage','Storage')}</div>
+    <div class="fld"><label>Image</label>${p.image_url?`<img src="${esc(p.image_url)}" style="width:120px;border-radius:10px;display:block;margin-bottom:6px">`:''}<input type="file" id="pimg" accept="image/*"><input name="image_url" type="hidden" value="${esc(p.image_url||'')}"></div>
+    <div class="checks">${cb('active','Live on site')}${cb('is_bestseller','Bestseller')}${cb('is_gift','Gifting')}${cb('is_new','New arrival')}${cb('hamper_eligible','Hamper eligible')}${cb('is_sample','Sample (placeholder)')}</div>
+    <button class="btn red" id="psave">Save product</button> ${id?`<span class="muted" style="margin-left:8px">Stock: ${p.stock} — change it from Inventory.</span>`:''}
+  </form>`);
+}
+async function saveProduct(e, id){
+  e.preventDefault(); const fd = new FormData(e.target), b = document.getElementById('psave'); b.disabled = true;
+  const row = {}; for (const [k,v] of fd.entries()) row[k] = v === '' ? null : v;
+  ['active','is_bestseller','is_gift','is_new','hamper_eligible','is_sample'].forEach(k => row[k] = fd.has(k));
+  ['mrp','price','gst_rate','cocoa_pct'].forEach(k => row[k] = row[k]===null?null:Number(row[k]));
+  ['sort','low_stock_at','stock'].forEach(k => { if (k in row) row[k] = row[k]===null?0:parseInt(row[k]); });
+  if (row.price > row.mrp){ b.disabled = false; return toast('Selling price cannot be above MRP'), false; }
+  const file = document.getElementById('pimg').files[0];
+  if (file){
+    const path = `${(row.sku||'item').replace(/[^a-z0-9-_]/gi,'_')}-${Date.now()}.${(file.name.split('.').pop()||'jpg').toLowerCase()}`;
+    const up = await sb.storage.from('product-images').upload(path, file, {cacheControl:'31536000', upsert:false});
+    if (up.error){ b.disabled = false; fail(up.error); return false; }
+    row.image_url = sb.storage.from('product-images').getPublicUrl(path).data.publicUrl;
+  }
+  let res;
+  if (id){ delete row.stock; res = await sb.from('products').update(row).eq('id', id); }
+  else { const st = row.stock||0; row.stock = 0; res = await sb.from('products').insert(row).select().single();
+    if (!res.error && st > 0) await sb.rpc('admin_adjust_stock', {p_product:res.data.id, p_change:st, p_reason:'inward', p_ref:'opening stock'}); }
+  b.disabled = false; if (res.error) { fail(res.error); return false; }
+  toast('Product saved'); closeDr(); await loadProducts(); renderProducts(); return false;
+}
+async function moveStock(){
+  const id = document.getElementById('ip').value, t = document.getElementById('it').value; let q = parseInt(document.getElementById('iq').value);
+  if (!q) return toast('Enter a quantity');
+  if (t==='inward') q = Math.abs(q); if (t==='outward') q = -Math.abs(q);
+  const {data, error} = await sb.rpc('admin_adjust_stock', {p_product:id, p_change:q, p_reason:t, p_ref:document.getElementById('ir').value||null});
+  if (error) return fail(error); toast('Stock now ' + data); VIEWS.Inventory();
+}
+
+/* ---------- enquiries ---------- */
+function openEnq(id){
+  const x = window.ENQS.find(e => e.id === id);
+  openDr(`<h2 style="font-size:26px">${esc(x.company)}</h2><p class="muted">${dt(x.created_at)}</p>
+    <div class="card" style="margin-top:14px"><b>${esc(x.contact_person)}</b><br><a href="mailto:${esc(x.email)}">${esc(x.email)}</a> · <a href="https://wa.me/${esc(x.phone.replace(/[^0-9]/g,'').replace(/^(?=[6-9]\d{9}$)/,'91'))}" target="_blank">${esc(x.phone)}</a>
+      <p style="margin-top:10px"><b>Quantity:</b> ${x.quantity??'—'} · <b>Budget/gift:</b> ${x.budget_per_gift?inr(x.budget_per_gift):'—'} · <b>Needed by:</b> ${x.delivery_date||'—'}<br><b>Location:</b> ${esc(x.delivery_location||'—')}</p>
+      ${x.customisation?`<p><b>Customisation:</b> ${esc(x.customisation)}</p>`:''}${x.message?`<p><b>Message:</b> ${esc(x.message)}</p>`:''}</div>
+    <div class="card"><div class="fld"><label>Status</label><select id="es">${ENQ.map(s=>`<option ${s===x.status?'selected':''}>${s}</option>`).join('')}</select></div>
+      <div class="fld"><label>Internal notes</label><textarea id="en">${esc(x.notes||'')}</textarea></div>
+      <button class="btn red" onclick="saveEnq(${x.id})">Save</button></div>`);
+}
+async function saveEnq(id){
+  const {error} = await sb.from('corporate_enquiries').update({status:document.getElementById('es').value, notes:document.getElementById('en').value||null}).eq('id', id);
+  if (error) return fail(error); toast('Saved'); VIEWS.Enquiries();
+}
+
+/* ---------- delivery / hampers / settings ---------- */
+function renderPins(){
+  const q = (document.getElementById('dq').value||'').toLowerCase();
+  const l = window.PINS.filter(p => !q || (p.pincode+' '+(p.area||'')).toLowerCase().includes(q));
+  document.getElementById('dlist').innerHTML = `<table><tr><th>Pincode</th><th>Area</th><th>Charge</th><th>ETA</th><th>Active</th><th></th></tr>${l.map(p=>`<tr><td>${p.pincode}</td><td>${esc(p.area)}</td><td>${inr(p.charge)}</td><td>${esc(p.eta)}</td><td>${p.active?'✓':'—'}</td><td><button class="btn sm light" onclick="fillPin('${p.pincode}')">Edit</button></td></tr>`).join('')}</table>`;
+}
+function fillPin(pc){ const p = window.PINS.find(x=>x.pincode===pc); document.getElementById('dp').value = p.pincode; document.getElementById('da').value = p.area||''; document.getElementById('dc').value = p.charge; document.getElementById('de').value = p.eta; document.getElementById('dact').value = String(p.active); window.scrollTo(0,0); }
+async function savePin(){
+  const row = {pincode:document.getElementById('dp').value.trim(), area:document.getElementById('da').value||null, charge:Number(document.getElementById('dc').value||0), eta:document.getElementById('de').value||'1–2 days', active:document.getElementById('dact').value==='true'};
+  if (!/^\d{6}$/.test(row.pincode)) return toast('Enter a 6-digit pincode');
+  const {error} = await sb.from('delivery_pincodes').upsert(row); if (error) return fail(error); toast('Pincode saved'); VIEWS.Delivery();
+}
+async function saveBox(id){
+  if (!id){ const {error} = await sb.from('hamper_boxes').insert({name:'New box', capacity:6, price:200, sort:9, active:false}); if (error) return fail(error); return VIEWS.Hampers(); }
+  const row = {name:document.getElementById('bn'+id).value, capacity:parseInt(document.getElementById('bc'+id).value), price:Number(document.getElementById('bp'+id).value), sort:parseInt(document.getElementById('bs'+id).value)||0, active:document.getElementById('ba'+id).checked};
+  const {error} = await sb.from('hamper_boxes').update(row).eq('id', id); if (error) return fail(error); toast('Saved');
+}
+async function saveSettings(){
+  const rows = [...document.querySelectorAll('[data-k]')].map(i => ({key:i.dataset.k, value:i.value.trim()}));
+  const {error} = await sb.from('business_settings').upsert(rows); if (error) return fail(error); toast('Settings saved');
+}
+
+boot();
+</script>
+</body>
+</html>
